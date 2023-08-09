@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <SideBar />
+    <SideBar class=""/>
     <router-view/>
   </div>
 
@@ -13,6 +13,19 @@
   <button class="noselect" @click="toggleModal">Open Modal</button> -->
 </template>
 
+<script>
+import SocketioService from '/home/vivarihome/vivarihome/src/services/socketio.service.js';
+
+export default {
+  name: 'App',
+  created() {
+    SocketioService.setupSocketConnection();
+  },
+  beforeUnmount() {
+    SocketioService.disconnect();
+  },
+}
+</script>
 
 <script setup>
 // import Modal from './components/ModalPopup.vue';

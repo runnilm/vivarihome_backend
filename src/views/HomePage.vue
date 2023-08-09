@@ -16,12 +16,15 @@
                         Temperature
                     </h3>
                 </div>
-                <div class="child-data center">
-                    <h4> 
-                        Hot side: xx°F
+                <div id='temps' class="child-data center">
+                    <h4 class="noselect">
+                        Basking spot: {{this.tempBasking}}°F
                     </h4>
-                    <h4>
-                        Cold side: xx°F
+                    <h4 class="noselect"> 
+                        Hot side: {{this.tempHot}}°F
+                    </h4>
+                    <h4 class="noselect">
+                        Cold side: {{this.tempCool}}°F
                     </h4>
                 </div>
             </div>
@@ -31,12 +34,9 @@
                         Humidity
                     </h3>
                 </div>
-                <div class="child-data center">
-                    <h4>
-                        Current: xx%
-                    </h4>
-                    <h4>
-                        Goal: xx%
+                <div id='humidity' class="child-data center">
+                    <h4 class="noselect">
+                        Current: {{this.humidity}}%
                     </h4>
                 </div>
             </div>
@@ -46,9 +46,9 @@
                         Mister Level
                     </h3>
                 </div>
-                <div class="child-data center">
-                    <h4>
-                        xx%
+                <div id='mistLevel' class="child-data center">
+                    <h4 class="noselect">
+                        {{this.mistPercent}}%
                     </h4>
                 </div>
             </div>
@@ -58,9 +58,12 @@
                         Security
                     </h3>
                 </div>
-                <div class="child-data center">
-                    <h4>
-                        Doors are both closed.
+                <div id='doorsOpen' class="child-data center">
+                    <h4 class="noselect" v-if="this.doorsOpen">
+                        Doors are open.
+                    </h4>
+                    <h4 class="noselect" v-if="!this.doorsOpen">
+                        Doors are closed.
                     </h4>
                 </div>
             </div>
@@ -74,13 +77,77 @@
 </template>
 
 <script>
+import io from 'socket.io-client';
+//import SocketioService from '/home/vivarihome/vivarihome/src/services/socketio.service.js';
+
+export default {
+    name: 'HomePage',
+    data() {
+        return {
+            socket: {},
+            tempCool: 0,
+            tempBasking: 0,
+            tempHot: 0,
+            humidity: 0,
+            mistPercent: 0,
+            doorsOpen: false,
+            interval: null
+        }
+    },
+    created() {
+        this.socket = io(process.env.VUE_APP_SOCKET_ENDPOINT);
+        this.interval = setInterval(this.refreshData, 1000);
+    },
+    beforeUnmount() {
+        clearInterval(this.interval);
+    },
+    mounted() {
+        this.refreshData();
+    },
+    methods: {
+        refreshData() {
+            this.socket.emit('refreshData');
+            this.socket.on("temp3", data => {
+                this.tempCool = data;
+                console.log("Cool side: " + data);
+            });
+            this.socket.on('temp4', data => {
+                this.tempBasking = data;
+                console.log("Basking spot: " + data);
+            });
+            this.socket.on('temp5', data => {
+                this.tempHot = data;
+                console.log("Hot side: " + data);
+            });
+            this.socket.on('dhtHum', data => {
+                this.humidity = data;
+                console.log("Humidity: " + data);
+            });
+            this.socket.on('mistPercent', data => {
+                this.mistPercent = data;
+                console.log("Misting reservoir: " + data);
+            });
+            this.socket.on('doorsOpen', data => {
+                this.doorsOpen = data;
+                if (data) {
+                    console.log("The doors are open.");
+                } else {
+                    console.log("The doors are closed.");
+                }
+            });
+            console.log("data refreshed");
+            this.socket.emit('refreshed');
+        }
+    }
+}
+
 const getFontSize = (textLength) => {
-  const baseSize = 9
-  if (textLength >= baseSize) {
-    textLength = baseSize - 2
-  }
-  const fontSize = baseSize - textLength
-  return `${fontSize}vw`
+    const baseSize = 9
+    if (textLength >= baseSize) {
+        textLength = baseSize - 2
+    }
+    const fontSize = baseSize - textLength
+    return `${fontSize}vw`
 }
 
 const boxes = document.querySelectorAll('.main h1')
@@ -88,6 +155,7 @@ const boxes = document.querySelectorAll('.main h1')
 boxes.forEach(box => {
   box.style.fontSize = getFontSize(box.textContent.length)
 })
+
 </script>
 
 
@@ -174,6 +242,7 @@ main {
     border-color: var(--greenLight);
     background: var(--greenDark);
     width: 40%;
+    vertical-align: top;
 }
 
 .left {
@@ -198,6 +267,14 @@ main {
 }
 
 @media (max-width: 768px) {
+    h3 {
+        font-size: 9vw;
+    }
+
+    h4 {
+        font-size: 5vw;
+    }
+
     .h1Small {
         font-size: 20vw;
     }

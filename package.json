@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --dest build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
+    "@popperjs/core": "^2.11.6",
     "body-parser": "^1.20.1",
     "core-js": "^3.8.3",
     "cors": "^2.8.5",
@@ -21,8 +22,12 @@
     "roboto-fontface": "*",
     "serve-favicon": "^2.5.0",
     "socket.io": "^4.5.3",
+    "socket.io-client": "^4.5.4",
+    "v-click-outside": "^3.2.0",
     "vue": "^3.2.13",
     "vue-router": "^4.1.6",
+    "vue-trend-chart": "^0.17.0",
+    "vue3trend": "^1.0.0",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
