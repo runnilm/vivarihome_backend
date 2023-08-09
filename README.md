@@ -1,9 +1,4 @@
-# vivarihome
-
-## Project setup
-```
-npm install
-```
+# vivarihome - frontend
 
 ### Compiles and hot-reloads for development
 ```
@@ -18,12 +13,4 @@ npm run build
 ### Lints and fixes files
 ```
 npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
-### Tester app
-```
-node index.js
 ```
